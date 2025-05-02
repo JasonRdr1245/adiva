@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Perfil de Usuario</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #fafafa;
+      }
+
+      .header {
+        width: 100%;
+        background-color: #ffffff;
+        padding: 10px 20px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: flex;
+        align-items: center;
+        height: 60px;
+        z-index: 1000;
+      }
+
+      .header h1 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #262626;
+      }
+
+      .container {
+        margin-top: 80px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .profile-section {
+        width: 100%;
+        max-width: 935px;
+        display: flex;
+        padding: 30px;
+        background-color: #fff;
+        border: 1px solid #dbdbdb;
+      }
+
+      .profile-pic-container {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        margin-right: 30px;
+        border: 1px solid #dbdbdb;
+      }
+
+      .profile-pic {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .edit-icon {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        border-radius: 50%;
+        padding: 5px;
+        cursor: pointer;
+      }
+
+      .profile-info {
+        flex-grow: 1;
+      }
+
+      .profile-info h2 {
+        font-size: 28px;
+        color: #262626;
+        margin: 0;
+        margin-bottom: 20px;
+      }
+
+      .profile-name {
+        cursor: pointer;
+        padding: 10px 20px;
+        border-radius: 12px;
+        transition: background-color 0.3s ease;
+        display: inline-block;
+      }
+
+      .profile-name:hover {
+        background-color: #f8d7ff; /* lila pastel suave */
+      }
+
+      .info-grid {
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transition: max-height 0.5s ease, opacity 0.5s ease, transform 0.5s ease;
+        transform: translateY(-10px);
+        margin-top: 5px;
+      }
+
+      .info-grid.show {
+        max-height: 1000px; /* grande para que quepa */
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .info-grid p {
+        font-size: 16px;
+        margin: 8px 0;
+      }
+
+      .info-grid span {
+        font-weight: bold;
+        color: #262626;
+      }
+
+      .buttons {
+        margin-top: 20px;
+        flex-direction: row;
+        display: flex;
+      }
+
+      .buttons button {
+        background: none;
+        border: 1px solid #dbdbdb;
+        border-radius: 4px;
+        padding: 8px 16px;
+        margin-right: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        color: #262626;
+      }
+
+      .buttons button:hover {
+        background-color: #fafafa;
+      }
+
+      /* Estilos para el modal de carga de imagen */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        width: 400px;
+      }
+      .public-section{
+
+      }
+      .public{
+
+      }
+      .public h2{
+        font-size: 28px;
+        color: #262626;
+        margin: 0;
+        margin-bottom: 20px;
+      }
+
+      .posts-section {
+            max-width: 935px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+            margin-top: 30px;
+        }
+
+        .post-item {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: #000;
+            border-radius: 3px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .post-item:hover {
+            transform: scale(0.98);
+        }
+
+        .post-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.95;
+            transition: opacity 0.3s ease;
+        }
+
+        .post-item:hover .post-image {
+            opacity: 0.85;
+        }
+
+        .post-stats {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            display: none;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .post-item:hover .post-stats {
+            display: flex;
+            gap: 30px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .posts-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 3px;
+            }
+        }
+        .settings-container {
+        position: relative;
+        margin-left: auto;
+        margin-right: 20px;
+    }
+
+    .settings-icon {
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        transition: background-color 0.3s ease;
+        font-size: 24px;
+    }
+
+    .settings-icon:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .settings-dropdown {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 40px;
+        background-color: white;
+        border: 1px solid #dbdbdb;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        width: 200px;
+        z-index: 1000;
+    }
+
+    .settings-dropdown.show {
+        display: block;
+    }
+
+    .dropdown-item {
+        padding: 12px 16px;
+        color: #262626;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f8f8f8;
+    }
+
+    .dropdown-item:active {
+        background-color: #f0f0f0;
+    }
+    .dropdown-item button {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 12px 16px;
+    color: inherit;
+    cursor: pointer;
+}
+
+.dropdown-item button:hover {
+    background-color: #f8f8f8;
+}
+/* Estilos para la sección de creación de posts */
+    .create-post {
+        background: white;
+        padding: 20px;
+        border: 1px solid #dbdbdb;
+        border-radius: 8px;
+        margin: 20px auto;
+        max-width: 935px;
+    }
+
+    .create-post h3 {
+        margin: 0 0 15px 0;
+        color: #262626;
+        font-size: 18px;
+    }
+
+    .create-post textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #dbdbdb;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .post-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .upload-btn {
+        background: none;
+        border: 1px solid #dbdbdb;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .upload-btn:hover {
+        background-color: #fafafa;
+    }
+
+    #imageUpload {
+        display: none;
+    }
+
+    .create-post button[type="submit"] {
+        background-color: #0095f6;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-left: auto;
+    }
+
+    .create-post button[type="submit"]:hover {
+        background-color: #0077cc;
+    }
+    </style>
+  </head>
+
+   <div class="header">
+      <h1>ADIVA</h1>
+      <!-- tuerca de eliminar cuenta con toggle -->
+      <div class="settings-container">
+        <div class="settings-icon" onclick="toggleSettings()">
+            ⚙️
+        </div>
+        <div class="settings-dropdown" id="settingsDropdown">
+            <form th:action="@{/delete-user/{id}(id=${user.id})}" method="post">
+              <!-- Eliminar el input hidden del CSRF -->
+              <button type="submit" class="dropdown-item" 
+                      onclick="return confirm('¿Confirmar eliminación?')">
+                  Eliminar cuenta
+              </button>
+          </form>
+        </div>
+    </div>
+    </div>
+
+    <div class="container">
+      <div class="profile-section">
+        <div class="profile-pic-container">
+          <!-- Imagen de perfil con src de la URL correcta -->
+          <img class="profile-pic" th:src="@{/profile-image/{userId}(userId=${user.id})}" alt="Foto de Perfil" />
+
+          <!-- Icono para editar -->
+          <div class="edit-icon" onclick="showImageModal()">
+            ✏️
+          </div>
+        </div>
+
+        <div class="profile-info">
+          <h2 th:text="${user.name} + ' ' + ${user.lastName}" onclick="toggleInfo()" class="profile-name"></h2>
+
+          <!-- Info oculta inicialmente -->
+          <div class="info-grid" id="infoGrid">
+            <p><span>Email:</span> <span th:text="${user.email}"></span></p>
+            <p><span>Teléfono:</span> <span th:text="${user.phone}"></span></p>
+
+            <!-- Consejero -->
+            <div th:if="${isAdvisor}">
+              <h3>Datos del Consejero</h3>
+              <p><span>Tipo de documento:</span> <span th:text="${user.advisorEntity.documentType}"></span></p>
+              <p><span>Código de identidad:</span> <span th:text="${user.advisorEntity.identifyCode}"></span></p>
+              <p><span>Título o Certificado:</span> <span th:text="${user.advisorEntity.certificate}"></span></p>
+              <p><span>Descripción:</span> <span th:text="${user.advisorEntity.type}"></span></p>
+              <div th:if="${user.advisorEntity == null}">
+                <p>No se encontraron datos del consejero</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="buttons">
+            <form action="/edit-profile" method="GET">
+            <button>Editar Perfil</button>
+            </form>
+            <form action="/logout" method="POST">
+                <button type="submit">Cerrar Sesión</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Añade esto antes del div .posts-section -->
+<div class="create-post">
+    <h3>¿Cómo te sientes hoy?</h3>
+    <form th:action="@{/public/save/{userId}(userId=${user.id})}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="type" value="POST"/> <!-- Campo requerido -->
+        <textarea name="comments" placeholder="Escribe algo..." required></textarea>
+        
+        <div class="post-actions">
+            <input type="file" name="imageFile" id="imageUpload" accept="image/*" required/>
+            <label for="imageUpload" class="upload-btn">📸 Subir imagen</label>
+            <button type="submit">Publicar</button>
+        </div>
+    </form>
+</div>
+    <div class="posts-section">
+        <div class="posts-grid">
+            <div class="post-item" th:each="entity : ${publicEntities}">
+                <img class="post-image" th:src="${entity.imageUrl}" alt="Publicación">
+                <div class="post-stats">
+                    <div class="stat-item">❤️ <span th:text="${entity.likes} ?: 0"></span></div>
+                    <div class="stat-item">💬 <span th:text="${entity.comments} ?: 0"></span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para subir nueva imagen -->
+    <div id="imageModal" class="modal">
+      <div class="modal-content">
+        <h3>Cargar nueva imagen de perfil</h3>
+        <form action="#" th:action="@{/upload-image/{userId}(userId=${user.id})}" method="post" enctype="multipart/form-data">
+          <input type="file" name="profileImage" required />
+          <br /><br />
+          <button type="submit">Subir imagen</button>
+          <button type="button" onclick="closeImageModal()">Cancelar</button>
+        </form>
+      </div>
+    </div>
+
+
+    <script>
+      function toggleInfo() {
+        const info = document.getElementById("infoGrid");
+        info.classList.toggle("show");
+      }
+
+      function showImageModal() {
+        document.getElementById("imageModal").style.display = "flex";
+      }
+
+      function closeImageModal() {
+        document.getElementById("imageModal").style.display = "none";
+      }
+      function toggleSettings() {
+        const dropdown = document.getElementById('settingsDropdown');
+        dropdown.classList.toggle('show');
+      }
+
+      // Cerrar el dropdown al hacer click fuera
+      window.onclick = function(event) {
+          if (!event.target.matches('.settings-icon')) {
+              const dropdowns = document.getElementsByClassName('settings-dropdown');
+              for (let i = 0; i < dropdowns.length; i++) {
+                  const openDropdown = dropdowns[i];
+                  if (openDropdown.classList.contains('show')) {
+                      openDropdown.classList.remove('show');
+                  }
+              }
+          }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Registro de Consejero</title>
+    <style>
+      /* Diseño global */
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #fafafa;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      h2 {
+        font-size: 36px;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 40px;
+        color: #262626;
+      }
+
+      /* Estilo del contenedor principal */
+      .container {
+        background-color: white;
+        width: 100%;
+        max-width: 600px;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      /* Estilo del formulario */
+      form {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+      }
+
+      label {
+        display: block;
+        margin: 15px 0 5px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      input[type="text"],
+      input[type="email"],
+      input[type="password"],
+      select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        box-sizing: border-box;
+        font-size: 16px;
+      }
+
+      /* Estilo de los botones */
+      button {
+        width: 100%;
+        padding: 14px;
+        font-size: 18px;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        background-color: #0095f6;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s;
+      }
+
+      button:hover {
+        background-color: #0078d4;
+      }
+
+      button:active {
+        transform: scale(0.98);
+      }
+
+      button:focus {
+        outline: none;
+      }
+
+      /* Mensaje de éxito */
+      .success-message {
+        background-color: #e0f8e0;
+        color: #2d862d;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        text-align: center;
+        font-weight: bold;
+      }
+
+      /* Estilo de fondo */
+      .background {
+        background: linear-gradient(to bottom, #f5f7fa, #c3cfe2);
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="background"></div>
+    <div class="container">
+      <h2>Registrar como Consejero</h2>
+      <form
+        th:action="@{/register-advisor}"
+        th:object="${userAdvisorForm}"
+        method="post"
+      >
+        <div th:if="${param.success}" class="success-message">
+          ¡Registro exitoso!
+        </div>
+        <label
+          >Nombre: <input type="text" th:field="*{userEntity.name}" required
+        /></label>
+        <label
+          >Apellido:
+          <input type="text" th:field="*{userEntity.lastName}" required
+        /></label>
+        <label
+          >Email: <input type="email" th:field="*{userEntity.email}" required
+        /></label>
+        <label
+          >Teléfono: <input type="text" th:field="*{userEntity.phone}" required
+        /></label>
+        <label
+          >Contraseña:
+          <input type="password" th:field="*{userEntity.password}" required
+        /></label>
+
+        <!-- Campos de Consejero -->
+        <label
+          >Tipo de documento:
+          <input type="text" th:field="*{advisorEntity.documentType}" required
+        /></label>
+        <label
+          >Código de identidad:
+          <input type="text" th:field="*{advisorEntity.identifyCode}" required
+        /></label>
+        <label
+          >Título o Certificado:
+          <input type="text" th:field="*{advisorEntity.certificate}" required
+        /></label>
+        <label
+          >Descripción:
+          <select th:field="*{advisorEntity.type}">
+            <option value="NORMAL">Normal</option>
+            <option value="PSYCHOLOGIST">Especialista</option>
+            <option value="COACH">Coach</option>
+          </select>
+        </label>
+        <button type="submit">Registrar</button>
+      </form>
+    </div>
+  </body>
+</html>
